@@ -11,6 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700&family=Outfit:wght@500;600&display=swap">
+<!-- movimento de scroll ligado antes de pintar; quem pede "reduzir movimento" vê tudo estático -->
+<script>if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('st-motion');</script>
 <style>
 /* ==========================================================================
    Seguralta — Home (v1)
@@ -1559,12 +1561,17 @@ html.alta-lock { overflow: hidden; }
 
 /* --- 4. números -------------------------------------------------------------- */
 .st-num { padding-block: 140px; border-top: 1px solid rgba(255,255,255,.08); }
-.st-num__grid { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; margin-top: 80px; }
-.st-num__item { padding-top: 28px; border-top: 1px solid rgba(255,255,255,.18); }
-.st-num__v { display: block; font: 700 clamp(52px, 6.4vw, 100px)/1 var(--font-display); letter-spacing: -.055em; white-space: nowrap; }
+/* números em linhas: o número ocupa a metade esquerda e a descrição a direita, separados por
+   uma linha fina. Cada número tem sempre meia largura, então nunca encosta no vizinho. */
+.st-num__grid { list-style: none; display: grid; max-width: 1080px; margin: 80px auto 0; border-bottom: 1px solid rgba(255,255,255,.14); }
+.st-num__item {
+  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; gap: 40px;
+  padding-block: 40px; border-top: 1px solid rgba(255,255,255,.14);
+}
+.st-num__v { display: block; font: 700 clamp(60px, 8.6vw, 128px)/.9 var(--font-display); letter-spacing: -.055em; white-space: nowrap; }
 .st-num__v .u { color: var(--orange-light); }
-.st-num__v .u--sm { font-size: .42em; letter-spacing: -.02em; }
-.st-num__l { display: block; margin-top: 18px; font: 400 16px/24px var(--font-body); color: var(--white-70); }
+.st-num__v .u--sm { font-size: .36em; letter-spacing: -.02em; }
+.st-num__l { display: block; max-width: 22ch; font: 500 clamp(18px, 1.7vw, 24px)/1.35 var(--font-display); letter-spacing: -.01em; color: var(--white-80); }
 
 /* --- 5. faixas de fotos que correm em sentidos opostos ----------------------- */
 .st-reel { padding-block: 140px 120px; background: var(--white); color: var(--ink); overflow: hidden; }
@@ -1619,10 +1626,10 @@ html.alta-lock { overflow: hidden; }
 .px-link--white .icon { color: var(--orange-light); }
 
 @media (max-width: 1023px) {
-  .st-num__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 56px; }
   .st-motion .st-ch__rail li { font-size: 12px; }
 }
 @media (max-width: 767px) {
+  .st-num__item { grid-template-columns: 1fr; gap: 12px; padding-block: 28px; }
   .st-open__stick { padding-top: 88px; }
   .st-motion .st-open__media { --ix: 6%; --it: 52%; }
   .st-ch__item, .st-val { grid-template-columns: 1fr; }
@@ -1639,6 +1646,22 @@ html.alta-lock { overflow: hidden; }
   .st-vals__list { gap: 80px; margin-top: 64px; }
 }
 .st-light { background: var(--white); color: var(--ink); }
+
+/* missão: a frase-mãe da marca, em destaque logo depois da abertura */
+.st-mission { padding-block: 160px 120px; }
+.st-mission__h { margin-top: 20px; font: 700 clamp(52px, 9vw, 140px)/.92 var(--font-display); letter-spacing: -.055em; text-wrap: balance; }
+.st-mission__h .accent { color: var(--orange-light); }
+.st-mission__p { font-size: clamp(19px, 1.9vw, 26px); color: var(--white-80); max-width: 34ch; }
+
+/* fechamento: frase do documentário acima do título */
+.st-end__q { max-width: 44ch; margin-bottom: 32px; }
+.st-end__q p { font: 600 clamp(19px, 1.7vw, 24px)/1.3 var(--font-display); letter-spacing: -.02em; color: var(--white-90, #fff); }
+.st-end__q footer { margin-top: 12px; font: 500 14px/20px var(--font-body); color: var(--white-70); }
+.st-end:has(.st-end__q) { padding-top: 112px; }
+
+@media (max-width: 899px) {
+  .st-mission { padding-block: 112px 88px; }
+}
 
 /* ==========================================================================
    HOME: INTERAÇÕES DE SCROLL
@@ -1775,6 +1798,60 @@ html.alta-lock { overflow: hidden; }
   .st-motion [data-motion] .hl-hist__media { clip-path: inset(calc((1 - var(--k)) * 58%) calc((1 - var(--k)) * 5%) calc((1 - var(--k)) * 8%) round calc((1 - var(--k)) * 20px)); }
 }
 
+/* ==========================================================================
+   PRODUTOS E HUBS: INTERAÇÕES DE SCROLL
+   Mesmo motor da home e da Sobre (setupStory, app.js), aplicado pela estrutura
+   comum do padrão .px: nenhum template precisa de marcação. Produto novo já nasce
+   com elas. Sem html.st-motion (pedido de "reduzir movimento") tudo fica estático.
+   ========================================================================== */
+/* topo: entra em cascata ao carregar; a foto se abre e, ao rolar, desliza dentro da moldura */
+.st-motion main.px .px-hero .container > * { animation: hl-in 1s cubic-bezier(.2,.7,.2,1) both; }
+.st-motion main.px .px-hero .container > :nth-child(2) { animation-delay: .1s; }
+.st-motion main.px .px-hero .container > :nth-child(3) { animation-delay: .2s; }
+.st-motion main.px .px-hero .container > :nth-child(4) { animation-delay: .3s; }
+.st-motion main.px .px-hero .container > :nth-child(5) { animation-delay: .36s; }
+.st-motion main.px .px-hero .container > :nth-child(n+6) { animation-delay: .42s; }
+.st-motion main.px .px-hero .px-hero__media { animation: px-open 1.4s cubic-bezier(.2,.7,.2,1) .35s both; }
+@keyframes px-open { from { clip-path: inset(8% 8% 8% 8% round 28px); opacity: 0; } to { clip-path: inset(0 0 0 0 round 28px); opacity: 1; } }
+.st-motion main.px .px-hero__media .media,
+.st-motion main.px .px-hero__media .ph { transform: translateY(calc(var(--p, 0) * 7%)) scale(1.14); }   /* 7% de deslocamento cabe nos 7% de sobra de cada lado */
+
+/* blocos que entram ao descer e saem ao subir. --d (app.js) é a posição entre os irmãos */
+.st-motion main.px :is(.px-head > *, .px-sec > .container > .px-h2, .prod-split > div:first-child > *,
+  .px-quote__copy > *, .px-end .container > *, .hub-index) {
+  opacity: 0; translate: 0 32px;
+  transition: opacity .8s ease, translate 1s cubic-bezier(.2,.7,.2,1);
+}
+.st-motion main.px :is(.hl__card, .stat, .cov__item, .exc > li, .plan, .etapa, .faq__item, .rel__item,
+  .why__item, .price__col, .hub > li, .px-quote__form) {
+  opacity: 0; translate: 0 48px; scale: .96;
+  transition: opacity .7s ease, translate 1s cubic-bezier(.2,.7,.2,1), scale 1s cubic-bezier(.2,.7,.2,1),
+              transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+}
+.st-motion main.px .is-in:is(.px-head > *, .px-sec > .container > .px-h2, .prod-split > div:first-child > *,
+  .px-quote__copy > *, .px-end .container > *, .hub-index) {
+  opacity: 1; translate: none; transition-delay: calc(var(--d, 0) * 90ms);
+}
+.st-motion main.px .is-in:is(.hl__card, .stat, .cov__item, .exc > li, .plan, .etapa, .faq__item, .rel__item,
+  .why__item, .price__col, .hub > li, .px-quote__form) {
+  opacity: 1; translate: none; scale: none;
+  transition-delay: var(--dl), var(--dl), var(--dl), 0s, 0s, 0s, 0s;
+  --dl: calc(var(--d, 0) * 110ms);
+}
+/* o número das etapas da consultoria desenha um traço laranja quando a etapa entra */
+.st-motion main.px .etapa .etapa__n { background-image: linear-gradient(var(--orange-light), var(--orange-light));
+  background-repeat: no-repeat; background-position: 0 100%; background-size: 0 2px; padding-bottom: 6px;
+  transition: background-size .9s cubic-bezier(.2,.7,.2,1); }
+.st-motion main.px .etapa.is-in .etapa__n { background-size: 100% 2px; transition-delay: calc(var(--d, 0) * 110ms + .3s); }
+
+/* abas de conteúdo: o painel novo entra em cascata a cada troca */
+.st-motion main.px .dtab:not([hidden]) > * { animation: hl-in .6s cubic-bezier(.2,.7,.2,1) both; }
+.st-motion main.px .dtab:not([hidden]) > :nth-child(2) { animation-delay: .08s; }
+.st-motion main.px .dtab:not([hidden]) .dtab__check li { animation: hl-in .5s cubic-bezier(.2,.7,.2,1) both; }
+.st-motion main.px .dtab:not([hidden]) .dtab__check li:nth-child(2) { animation-delay: .18s; }
+.st-motion main.px .dtab:not([hidden]) .dtab__check li:nth-child(3) { animation-delay: .26s; }
+.st-motion main.px .dtab:not([hidden]) .dtab__check li:nth-child(n+4) { animation-delay: .34s; }
+
 </style>
 
 <script type="application/ld+json">
@@ -1797,9 +1874,13 @@ html.alta-lock { overflow: hidden; }
       "@type": "FAQPage",
       "mainEntity": [
         { "@type": "Question", "name": "Há quanto tempo a Seguralta existe?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A Seguralta está no mercado há 58 anos, desde uma sala simples no centro de São Paulo até se tornar uma das maiores redes de corretoras do Brasil." } },
+          "acceptedAnswer": { "@type": "Answer", "text": "A Seguralta está no mercado há 58 anos. A história começou quando o fundador, Reinaldo Zanon, foi convidado a ser corretor da SulAmérica e se mudou para São José do Rio Preto, no interior de São Paulo. Hoje a rede tem unidades em todas as regiões do Brasil." } },
+        { "@type": "Question", "name": "De onde vem o nome Seguralta?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Da região onde tudo começou. De Araraquara para frente, o interior paulista era conhecido como Alta Araraquarense. Seguralta é o seguro da Alta." } },
         { "@type": "Question", "name": "Como funciona a rede de franquias da Seguralta?",
-          "acceptedAnswer": { "@type": "Answer", "text": "A Seguralta estruturou um modelo de franquias para corretores de seguros quando o franchising ainda era pouco difundido no Brasil. Hoje a marca reúne unidades em todo o país, com suporte, sistema e convenções anuais para a rede." } },
+          "acceptedAnswer": { "@type": "Answer", "text": "Quando quase ninguém falava em franquia no Brasil, a Seguralta construiu um modelo para que outros corretores crescessem com a marca e, depois, lançou a microfranquia, um formato para começar com menos investimento. A rede tem sistema, suporte, formação e uma convenção nacional todos os anos." } },
+        { "@type": "Question", "name": "O que é um Segulover?",
+          "acceptedAnswer": { "@type": "Answer", "text": "É como a rede chama quem faz parte da Seguralta: gente comprometida em realizar e proteger sonhos, que acredita ser possível mudar o mundo, um sonho de cada vez." } },
         { "@type": "Question", "name": "Como faço parte da Seguralta?",
           "acceptedAnswer": { "@type": "Answer", "text": "É possível se tornar um franqueado Seguralta ou buscar uma cotação com um corretor da rede. As duas portas estão nesta página." } },
         { "@type": "Question", "name": "Onde encontro uma unidade Seguralta?",
@@ -1842,8 +1923,6 @@ html.alta-lock { overflow: hidden; }
 
 
 <main class="story">
-<!-- liga o modo com movimento antes de a página pintar, para não piscar o layout estático -->
-<script>if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('st-motion');</script>
 
 <!-- ===================== 1. ABERTURA ===================== -->
 <section class="st-open" data-scrub="stick" aria-labelledby="about-title">
@@ -1858,12 +1937,19 @@ html.alta-lock { overflow: hidden; }
   </div>
 </section>
 
+<!-- ===================== 1b. MISSÃO ===================== -->
+<section class="st-mission" aria-labelledby="missao-title">
+  <div class="st-wrap st-head">
+    <p class="st-label" data-reveal>Nossa missão</p>
+    <h2 class="st-mission__h" id="missao-title" data-reveal>Realizar e proteger <span class="accent">sonhos.</span></h2>
+    <p class="st-lead st-mission__p" data-reveal>A Seguralta é a rede de corretores que acolhe o cliente e valoriza o corretor.</p>
+  </div>
+</section>
+
 <!-- ===================== 2. MANIFESTO ===================== -->
-<section class="st-words" data-scrub="stick" aria-labelledby="manifesto-title">
+<section class="st-words" data-scrub="stick" aria-label="Manifesto">
   <div class="st-words__stick st-wrap">
-    <p class="st-label st-head" id="manifesto-title">Manifesto</p>
     <p class="st-words__text" data-words>Ser corretor é estar onde o cliente está. É proteger vidas e <em>sonhos que nem se concretizaram ainda.</em> É prever o imprevisível e, quando o difícil acontece, aparecer <em>não como vendedor, mas como quem apoia recomeços.</em></p>
-    <p class="st-words__src">Do manifesto Corretor é Seguralta</p>
   </div>
 </section>
 
@@ -1877,51 +1963,51 @@ html.alta-lock { overflow: hidden; }
     <div class="st-ch__stick st-wrap">
       <ol class="st-ch__list">
         <li class="st-ch__item is-active">
-          <div class="st-ch__media"><div class="ph ph--warm" data-asset="sobre_sonho" role="img" aria-label="Fundador da Seguralta nos primeiros anos da corretora"><span class="ph-label">Foto: Fundador da Seguralta nos primeiros anos da corretora</span></div></div>
+          <div class="st-ch__media"><div class="ph ph--warm" data-asset="sobre_sonho" role="img" aria-label="Reinaldo Zanon, fundador da Seguralta, nos primeiros anos como corretor"><span class="ph-label">Foto: Reinaldo Zanon, fundador da Seguralta, nos primeiros anos como corretor</span></div></div>
           <div class="st-ch__copy">
-            <p class="st-ch__n">Capítulo 1 · O sonho</p>
-            <h3 class="st-ch__title">Um homem, um desejo.</h3>
-            <p class="st-ch__txt">Tudo começou com a vontade de mudar a própria realidade e, no caminho, a de muitas outras famílias.</p>
+            <p class="st-ch__n">Capítulo 1 · A origem</p>
+            <h3 class="st-ch__title">Da feira ao seguro.</h3>
+            <p class="st-ch__txt">Reinaldo Zanon vendeu alface na feira e jogou bola pelo Paulista de Jundiaí até ser convidado a ser corretor da SulAmérica. Aceitou e se mudou para São José do Rio Preto, com a vontade de mudar a própria realidade e a de muitas outras famílias.</p>
           </div>
         </li>
         <li class="st-ch__item">
-          <div class="st-ch__media"><div class="ph " data-asset="sobre_sala" role="img" aria-label="Primeiro escritório da Seguralta no centro de São Paulo"><span class="ph-label">Foto: Primeiro escritório da Seguralta no centro de São Paulo</span></div></div>
+          <div class="st-ch__media"><div class="ph ph--light" data-asset="sobre_nome" role="img" aria-label="Estrada do interior paulista na região da Alta Araraquarense"><span class="ph-label">Foto: Estrada do interior paulista na região da Alta Araraquarense</span></div></div>
           <div class="st-ch__copy">
-            <p class="st-ch__n">Capítulo 2 · A sala</p>
-            <h3 class="st-ch__title">Uma sala no centro de São Paulo.</h3>
-            <p class="st-ch__txt">Poucos clientes e uma decisão que nunca mudou: acolher quem compra seguro e valorizar quem vende.</p>
+            <p class="st-ch__n">Capítulo 2 · O nome</p>
+            <h3 class="st-ch__title">O seguro da Alta.</h3>
+            <p class="st-ch__txt">De Araraquara para frente, a região era conhecida como Alta Araraquarense, e dali veio o nome. Veio também um jeito de trabalhar: cliente não é número. Havia clientes que, décadas depois, ainda recebiam a ligação do próprio fundador na hora de renovar.</p>
           </div>
         </li>
         <li class="st-ch__item">
-          <div class="st-ch__media"><div class="ph ph--warm" data-asset="sobre_franquia" role="img" aria-label="Corretor recebendo as chaves da primeira unidade franqueada"><span class="ph-label">Foto: Corretor recebendo as chaves da primeira unidade franqueada</span></div></div>
+          <div class="st-ch__media"><div class="ph ph--warm" data-asset="sobre_franquia" role="img" aria-label="Equipe batendo o sino no escritório para comemorar uma franquia vendida"><span class="ph-label">Foto: Equipe batendo o sino no escritório para comemorar uma franquia vendida</span></div></div>
           <div class="st-ch__copy">
             <p class="st-ch__n">Capítulo 3 · A franquia</p>
             <h3 class="st-ch__title">Antes de todo mundo.</h3>
-            <p class="st-ch__txt">Quando quase ninguém falava em franquia no Brasil, a Seguralta criou um modelo para outros corretores crescerem com a marca.</p>
+            <p class="st-ch__txt">Quando quase ninguém falava em franquia no Brasil, a Seguralta tirou a ideia da gaveta e construiu um modelo para outros corretores crescerem com a marca. Depois veio a microfranquia, para começar com menos investimento. Cada unidade vendida ainda é comemorada batendo o sino.</p>
+          </div>
+        </li>
+        <li class="st-ch__item">
+          <div class="st-ch__media"><div class="ph ph--light" data-asset="sobre_geracao" role="img" aria-label="Reinaldo Zanon ao lado dos filhos, Gustavo e Reinaldo Zanon, no escritório"><span class="ph-label">Foto: Reinaldo Zanon ao lado dos filhos, Gustavo e Reinaldo Zanon, no escritório</span></div></div>
+          <div class="st-ch__copy">
+            <p class="st-ch__n">Capítulo 4 · A família</p>
+            <h3 class="st-ch__title">De pai para filhos.</h3>
+            <p class="st-ch__txt">Aos poucos, o fundador passou a administração para os filhos, Gustavo e Reinaldo Zanon. Com jeitos diferentes que se completam, eles somam visão de crescimento e cuidado com a gestão, e levam adiante uma frase que a mãe repetia em casa: “Se você tem um sonho, nunca desista.”</p>
           </div>
         </li>
         <li class="st-ch__item">
           <div class="st-ch__media"><div class="ph " data-asset="sobre_convencao" role="img" aria-label="Plateia de corretores na convenção nacional da Seguralta"><span class="ph-label">Foto: Plateia de corretores na convenção nacional da Seguralta</span></div></div>
           <div class="st-ch__copy">
-            <p class="st-ch__n">Capítulo 4 · A rede</p>
-            <h3 class="st-ch__title">Uma rede que se encontra.</h3>
-            <p class="st-ch__txt">Todo ano, corretores de todo o país se reúnem na convenção nacional para aprender, celebrar e voltar mais fortes.</p>
-          </div>
-        </li>
-        <li class="st-ch__item">
-          <div class="st-ch__media"><img class="media" src="../assets/img/hero_bg.jpg" alt="Fachada de vidro de edifício corporativo moderno, com palmeiras e espelho d’água" loading="eager" fetchpriority="high" decoding="async"></div>
-          <div class="st-ch__copy">
             <p class="st-ch__n">Capítulo 5 · Hoje</p>
-            <h3 class="st-ch__title">O mesmo propósito.</h3>
-            <p class="st-ch__txt">Mais de 1.800 unidades e mais de 50 seguradoras parceiras, com a missão do primeiro dia: realizar e proteger sonhos.</p>
+            <h3 class="st-ch__title">A onda laranja.</h3>
+            <p class="st-ch__txt">A ideia que nasceu no interior paulista chegou a todas as regiões do país. A rede se encontra todo ano na convenção nacional, e quem faz parte tem nome: Segulover, gente de sangue laranja que acredita ser possível mudar o mundo, um sonho de cada vez.</p>
           </div>
         </li>
       </ol>
       <ol class="st-ch__rail" aria-hidden="true">
-        <li class="is-on">O sonho</li>
-        <li>A sala</li>
+        <li class="is-on">A origem</li>
+        <li>O nome</li>
         <li>A franquia</li>
-        <li>A rede</li>
+        <li>A família</li>
         <li>Hoje</li>
       </ol>
     </div>
@@ -1965,8 +2051,8 @@ html.alta-lock { overflow: hidden; }
 <section class="st-reel" data-scrub="pass" aria-labelledby="gente-title">
   <div class="st-wrap st-head">
     <p class="st-label st-label--ink">Quem faz a Seguralta</p>
-    <h2 class="st-h2 st-h2--ink" id="gente-title">Gente que não <span class="accent">faz nada sozinha.</span></h2>
-    <p class="st-lead st-lead--ink">Quem começou jovem e continua até hoje, quem foi chamado para recomeçar numa hora difícil e quem ensina o que aprendeu para o próximo corretor.</p>
+    <h2 class="st-h2 st-h2--ink" id="gente-title">Gente que <span class="accent">fica.</span></h2>
+    <p class="st-lead st-lead--ink">Uma empresa que dura tanto tempo é feita de pessoas que ficam, aprendem e ensinam o próximo.</p>
   </div>
   <div class="st-reel__rows">
     <ul class="st-reel__row st-reel__row--a">
@@ -1993,39 +2079,47 @@ html.alta-lock { overflow: hidden; }
   <div class="st-wrap">
     <div class="st-head">
       <p class="st-label st-label--ink">O que nos move</p>
-      <h2 class="st-h2 st-h2--ink" id="val-title">Quatro ideias. <span class="accent">Um manifesto.</span></h2>
+      <h2 class="st-h2 st-h2--ink" id="val-title">Cinco ideias. <span class="accent">Um só propósito.</span></h2>
     </div>
     <ol class="st-vals__list">
       <li class="st-val">
         <div class="st-val__media" data-reveal="media"><div class="ph ph--warm" data-asset="sobre_valor_proposito" role="img" aria-label="Família protegida conversando na sala de casa"><span class="ph-label">Foto: Família protegida conversando na sala de casa</span></div></div>
         <div data-reveal>
           <p class="st-val__n">01 · Propósito</p>
-          <h3 class="st-val__t">Não é sobre o que a gente faz.</h3>
-          <p class="st-val__p">É sobre o impacto que causa na vida das pessoas, na sociedade e no mundo.</p>
+          <h3 class="st-val__t">Seguro é proteção de sonhos.</h3>
+          <p class="st-val__p">Não é sobre o que a gente faz, é sobre o impacto na vida das pessoas. O que se protege é a vida, a família, a casa e o carro que alguém levou anos para conquistar.</p>
+        </div>
+      </li>
+      <li class="st-val">
+        <div class="st-val__media" data-reveal="media"><div class="ph ph--light" data-asset="sobre_valor_cliente" role="img" aria-label="Corretor conversando com um cliente na mesa da unidade"><span class="ph-label">Foto: Corretor conversando com um cliente na mesa da unidade</span></div></div>
+        <div data-reveal>
+          <p class="st-val__n">02 · Cliente não é número</p>
+          <h3 class="st-val__t">Cada um tem a sua história.</h3>
+          <p class="st-val__p">Crescemos um cliente de cada vez, atendendo à noite, no sábado, no domingo e, principalmente, na hora do sinistro.</p>
         </div>
       </li>
       <li class="st-val">
         <div class="st-val__media" data-reveal="media"><img class="media" src="../assets/img/emp_photo.jpg" alt="Corretora sorrindo à mesa de trabalho" loading="lazy" decoding="async"></div>
         <div data-reveal>
-          <p class="st-val__n">02 · Protagonismo</p>
+          <p class="st-val__n">03 · Corretor protagonista</p>
           <h3 class="st-val__t">O corretor no centro.</h3>
-          <p class="st-val__p">O mercado de seguros só faz sentido com um corretor forte, valorizado e protagonista.</p>
+          <p class="st-val__p">O seguro só faz sentido com um corretor forte, valorizado e perto de quem ele protege. Quando um corretor cresce, todos crescem.</p>
         </div>
       </li>
       <li class="st-val">
         <div class="st-val__media" data-reveal="media"><div class="ph ph--light" data-asset="sobre_valor_coragem" role="img" aria-label="Corretor abrindo a porta da própria unidade pela primeira vez"><span class="ph-label">Foto: Corretor abrindo a porta da própria unidade pela primeira vez</span></div></div>
         <div data-reveal>
-          <p class="st-val__n">03 · Coragem</p>
+          <p class="st-val__n">04 · Coragem</p>
           <h3 class="st-val__t">Sonho pede coragem.</h3>
-          <p class="st-val__p">O sonho é o ponto de partida. É a coragem de realizar que constrói o futuro, com trabalho e dedicação.</p>
+          <p class="st-val__p">O sonho é o ponto de partida. É a coragem de realizá-lo, com trabalho e dedicação, que constrói o futuro.</p>
         </div>
       </li>
       <li class="st-val">
         <div class="st-val__media" data-reveal="media"><div class="ph ph--warm" data-asset="sobre_valor_evolucao" role="img" aria-label="Equipe usando tecnologia para atender clientes"><span class="ph-label">Foto: Equipe usando tecnologia para atender clientes</span></div></div>
         <div data-reveal>
-          <p class="st-val__n">04 · Evolução</p>
+          <p class="st-val__n">05 · Evolução</p>
           <h3 class="st-val__t">O mundo não para.</h3>
-          <p class="st-val__p">A proteção precisa acompanhar as pessoas. Por isso apostamos em inovação e evoluímos todos os dias.</p>
+          <p class="st-val__p">A proteção precisa acompanhar as pessoas. Por isso a gente sai do trilho e inova todos os dias, sem perder o jeito do primeiro dia.</p>
         </div>
       </li>
     </ol>
@@ -2072,8 +2166,7 @@ html.alta-lock { overflow: hidden; }
 <section class="st-quote" data-scrub="pass" aria-label="Citação">
   <div class="st-wrap">
     <blockquote>
-      <p class="st-quote__q">“Meu sangue já não é mais vermelho. É laranja.”</p>
-      <footer class="st-quote__m">Corretor da rede, no documentário 50 Anos de História</footer>
+      <p class="st-quote__q">“Hoje meu sangue já não é nem vermelho mais. Meu sangue é laranja.”</p>
     </blockquote>
   </div>
 </section>
@@ -2085,11 +2178,19 @@ html.alta-lock { overflow: hidden; }
     <div class="faq">
       <details class="faq__item">
         <summary>Há quanto tempo a Seguralta existe?</summary>
-        <p>A Seguralta está no mercado há 58 anos, desde uma sala simples no centro de São Paulo até se tornar uma das maiores redes de corretoras do Brasil.</p>
+        <p>A Seguralta está no mercado há 58 anos. A história começou quando o fundador, Reinaldo Zanon, foi convidado a ser corretor da SulAmérica e se mudou para São José do Rio Preto, no interior de São Paulo. Hoje a rede tem unidades em todas as regiões do Brasil.</p>
+      </details>
+      <details class="faq__item">
+        <summary>De onde vem o nome Seguralta?</summary>
+        <p>Da região onde tudo começou. De Araraquara para frente, o interior paulista era conhecido como Alta Araraquarense. Seguralta é o seguro da Alta.</p>
       </details>
       <details class="faq__item">
         <summary>Como funciona a rede de franquias da Seguralta?</summary>
-        <p>A Seguralta estruturou um modelo de franquias para corretores de seguros quando o franchising ainda era pouco difundido no Brasil. Hoje a marca reúne unidades em todo o país, com suporte, sistema e convenções anuais para a rede.</p>
+        <p>Quando quase ninguém falava em franquia no Brasil, a Seguralta construiu um modelo para que outros corretores crescessem com a marca e, depois, lançou a microfranquia, um formato para começar com menos investimento. A rede tem sistema, suporte, formação e uma convenção nacional todos os anos.</p>
+      </details>
+      <details class="faq__item">
+        <summary>O que é um Segulover?</summary>
+        <p>É como a rede chama quem faz parte da Seguralta: gente comprometida em realizar e proteger sonhos, que acredita ser possível mudar o mundo, um sonho de cada vez.</p>
       </details>
       <details class="faq__item">
         <summary>Como faço parte da Seguralta?</summary>
@@ -2116,6 +2217,9 @@ html.alta-lock { overflow: hidden; }
 <section class="st-end" data-scrub="pass" aria-labelledby="end-title">
   <div class="st-end__bg"><img class="media" src="../assets/img/hero_bg.jpg" alt="Fachada de vidro de edifício corporativo moderno, com palmeiras e espelho d’água" loading="eager" fetchpriority="high" decoding="async"></div>
   <div class="st-wrap">
+    <blockquote class="st-end__q">
+      <p>“Não é o que você conquista, mas sim quantas pessoas você leva com você.”</p>
+    </blockquote>
     <h2 class="st-end__h2" id="end-title">O próximo capítulo <span class="accent">pode ser seu.</span></h2>
     <p class="st-lead">Abra uma unidade ou fale com um corretor e escreva a sua parte dessa história.</p>
     <div class="px-hero__ctas">
@@ -2124,7 +2228,6 @@ html.alta-lock { overflow: hidden; }
     </div>
   </div>
 </section>
-
 
 </main>
 
@@ -3116,8 +3219,38 @@ html.alta-lock { overflow: hidden; }
        pass:  seção comum; 0 quando entra por baixo, 1 quando sai por cima.
      data-steps divide o trecho em capítulos e marca o ativo. */
   (function setupStory() {
-    var root = $('.story, [data-motion]');                      /* Sobre e o teste da home */
+    var root = $('.story, [data-motion], main.px');              /* Sobre, home, produtos e hubs */
     if (!root || !document.documentElement.classList.contains('st-motion')) return;
+
+    /* Páginas de produto e hubs (padrão .px): as interações saem da estrutura comum, sem marcar
+       nada nos templates. O CSS já esconde esses blocos antes da pintura (html.st-motion), então
+       aqui só entram a ordem da cascata (--d), o recuo do topo e os contadores. */
+    var PX_AUTO = '.px-head > *, .px-sec > .container > .px-h2, .prod-split > div:first-child > *,' +
+      ' .px-quote__copy > *, .px-quote__form, .px-end .container > *, .hub-index,' +
+      ' .hl__card, .stat, .cov__item, .exc > li, .plan, .etapa, .faq__item, .rel__item,' +
+      ' .why__item, .price__col, .hub > li';
+    var pxAuto = root.classList.contains('px') ? $$(PX_AUTO, root) : [];
+    pxAuto.forEach(function (el) {
+      var i = 0, sib = el.previousElementSibling;                 /* posição entre os irmãos animados */
+      while (sib) { if (sib.matches(PX_AUTO)) i++; sib = sib.previousElementSibling; }
+      el.style.setProperty('--d', Math.min(i, 7));
+    });
+    if (pxAuto.length) {
+      var hero = $('.px-hero', root);
+      if (hero) hero.setAttribute('data-scrub', 'leave');
+      /* números das seções escuras: "50+", "24 horas" contam a partir de zero; "2 vidas", "R$ 0", "Grupo" ficam */
+      $$('.stat__num', root).forEach(function (el) {
+        var node = Array.prototype.find.call(el.childNodes, function (n) { return n.nodeType === 3 && /\d/.test(n.nodeValue); });
+        var m = node && node.nodeValue.match(/(\d{1,3}(?:\.\d{3})+|\d+)(?![\d,])/);
+        if (!m || +m[1].replace(/\./g, '') < 10) return;       /* contar até 2 pisca; só de 10 para cima */
+        var after = node.splitText(m.index);
+        after.splitText(m[1].length);
+        var span = document.createElement('span');
+        span.setAttribute('data-count', m[1].replace(/\./g, ''));
+        span.textContent = m[1];
+        after.parentNode.replaceChild(span, after);
+      });
+    }
 
     /* manifesto: cada palavra vira um span com índice, e o CSS acende conforme --p */
     $$('[data-words]', root).forEach(function (el) {
@@ -3178,7 +3311,7 @@ html.alta-lock { overflow: hidden; }
 
     /* entradas nos dois sentidos: descendo, o elemento entra ao cruzar a tela; subindo, sai
        quando volta a ficar abaixo dela. Acima da tela ele fica como está, para não piscar. */
-    var reveals = $$('[data-reveal]', root), counters = $$('[data-count]', root);
+    var reveals = $$('[data-reveal]', root).concat(pxAuto), counters = $$('[data-count]', root);
     if (!('IntersectionObserver' in window)) {
       reveals.forEach(function (el) { el.classList.add('is-in'); });
       return;
@@ -3192,9 +3325,12 @@ html.alta-lock { overflow: hidden; }
       }, opts);
       els.forEach(function (el) { obs.observe(el); });
     }
-    watch(reveals, { rootMargin: '0px 0px -12% 0px', threshold: .15 },
-      function (el) { el.classList.add('is-in'); },
-      function (el) { el.classList.remove('is-in'); });
+    /* cards da galeria horizontal entram com qualquer pedaço à vista: a ponta do próximo card é o
+       que avisa que a galeria continua para o lado, então ela não pode ficar vazia */
+    var inOut = [function (el) { el.classList.add('is-in'); }, function (el) { el.classList.remove('is-in'); }];
+    var peek = function (el) { return el.classList.contains('hl__card'); };
+    watch(reveals.filter(function (el) { return !peek(el); }), { rootMargin: '0px 0px -12% 0px', threshold: .15 }, inOut[0], inOut[1]);
+    watch(reveals.filter(peek), { rootMargin: '0px 0px -12% 0px', threshold: 0 }, inOut[0], inOut[1]);
 
     /* conversa de exemplo: toca ao entrar e se desfaz ao sair por baixo */
     watch($$('[data-chat-play]', root), { threshold: .5 },

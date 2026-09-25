@@ -11,6 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700&family=Outfit:wght@500;600&display=swap">
+<!-- movimento de scroll ligado antes de pintar; quem pede "reduzir movimento" vê tudo estático -->
+<script>if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('st-motion');</script>
 <style>
 /* ==========================================================================
    Seguralta — Home (v1)
@@ -1559,12 +1561,17 @@ html.alta-lock { overflow: hidden; }
 
 /* --- 4. números -------------------------------------------------------------- */
 .st-num { padding-block: 140px; border-top: 1px solid rgba(255,255,255,.08); }
-.st-num__grid { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 32px; margin-top: 80px; }
-.st-num__item { padding-top: 28px; border-top: 1px solid rgba(255,255,255,.18); }
-.st-num__v { display: block; font: 700 clamp(52px, 6.4vw, 100px)/1 var(--font-display); letter-spacing: -.055em; white-space: nowrap; }
+/* números em linhas: o número ocupa a metade esquerda e a descrição a direita, separados por
+   uma linha fina. Cada número tem sempre meia largura, então nunca encosta no vizinho. */
+.st-num__grid { list-style: none; display: grid; max-width: 1080px; margin: 80px auto 0; border-bottom: 1px solid rgba(255,255,255,.14); }
+.st-num__item {
+  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; gap: 40px;
+  padding-block: 40px; border-top: 1px solid rgba(255,255,255,.14);
+}
+.st-num__v { display: block; font: 700 clamp(60px, 8.6vw, 128px)/.9 var(--font-display); letter-spacing: -.055em; white-space: nowrap; }
 .st-num__v .u { color: var(--orange-light); }
-.st-num__v .u--sm { font-size: .42em; letter-spacing: -.02em; }
-.st-num__l { display: block; margin-top: 18px; font: 400 16px/24px var(--font-body); color: var(--white-70); }
+.st-num__v .u--sm { font-size: .36em; letter-spacing: -.02em; }
+.st-num__l { display: block; max-width: 22ch; font: 500 clamp(18px, 1.7vw, 24px)/1.35 var(--font-display); letter-spacing: -.01em; color: var(--white-80); }
 
 /* --- 5. faixas de fotos que correm em sentidos opostos ----------------------- */
 .st-reel { padding-block: 140px 120px; background: var(--white); color: var(--ink); overflow: hidden; }
@@ -1619,10 +1626,10 @@ html.alta-lock { overflow: hidden; }
 .px-link--white .icon { color: var(--orange-light); }
 
 @media (max-width: 1023px) {
-  .st-num__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 56px; }
   .st-motion .st-ch__rail li { font-size: 12px; }
 }
 @media (max-width: 767px) {
+  .st-num__item { grid-template-columns: 1fr; gap: 12px; padding-block: 28px; }
   .st-open__stick { padding-top: 88px; }
   .st-motion .st-open__media { --ix: 6%; --it: 52%; }
   .st-ch__item, .st-val { grid-template-columns: 1fr; }
@@ -1639,6 +1646,22 @@ html.alta-lock { overflow: hidden; }
   .st-vals__list { gap: 80px; margin-top: 64px; }
 }
 .st-light { background: var(--white); color: var(--ink); }
+
+/* missão: a frase-mãe da marca, em destaque logo depois da abertura */
+.st-mission { padding-block: 160px 120px; }
+.st-mission__h { margin-top: 20px; font: 700 clamp(52px, 9vw, 140px)/.92 var(--font-display); letter-spacing: -.055em; text-wrap: balance; }
+.st-mission__h .accent { color: var(--orange-light); }
+.st-mission__p { font-size: clamp(19px, 1.9vw, 26px); color: var(--white-80); max-width: 34ch; }
+
+/* fechamento: frase do documentário acima do título */
+.st-end__q { max-width: 44ch; margin-bottom: 32px; }
+.st-end__q p { font: 600 clamp(19px, 1.7vw, 24px)/1.3 var(--font-display); letter-spacing: -.02em; color: var(--white-90, #fff); }
+.st-end__q footer { margin-top: 12px; font: 500 14px/20px var(--font-body); color: var(--white-70); }
+.st-end:has(.st-end__q) { padding-top: 112px; }
+
+@media (max-width: 899px) {
+  .st-mission { padding-block: 112px 88px; }
+}
 
 /* ==========================================================================
    HOME: INTERAÇÕES DE SCROLL
@@ -1774,6 +1797,60 @@ html.alta-lock { overflow: hidden; }
   .st-motion [data-motion] .hl-hist { height: 220vh; }
   .st-motion [data-motion] .hl-hist__media { clip-path: inset(calc((1 - var(--k)) * 58%) calc((1 - var(--k)) * 5%) calc((1 - var(--k)) * 8%) round calc((1 - var(--k)) * 20px)); }
 }
+
+/* ==========================================================================
+   PRODUTOS E HUBS: INTERAÇÕES DE SCROLL
+   Mesmo motor da home e da Sobre (setupStory, app.js), aplicado pela estrutura
+   comum do padrão .px: nenhum template precisa de marcação. Produto novo já nasce
+   com elas. Sem html.st-motion (pedido de "reduzir movimento") tudo fica estático.
+   ========================================================================== */
+/* topo: entra em cascata ao carregar; a foto se abre e, ao rolar, desliza dentro da moldura */
+.st-motion main.px .px-hero .container > * { animation: hl-in 1s cubic-bezier(.2,.7,.2,1) both; }
+.st-motion main.px .px-hero .container > :nth-child(2) { animation-delay: .1s; }
+.st-motion main.px .px-hero .container > :nth-child(3) { animation-delay: .2s; }
+.st-motion main.px .px-hero .container > :nth-child(4) { animation-delay: .3s; }
+.st-motion main.px .px-hero .container > :nth-child(5) { animation-delay: .36s; }
+.st-motion main.px .px-hero .container > :nth-child(n+6) { animation-delay: .42s; }
+.st-motion main.px .px-hero .px-hero__media { animation: px-open 1.4s cubic-bezier(.2,.7,.2,1) .35s both; }
+@keyframes px-open { from { clip-path: inset(8% 8% 8% 8% round 28px); opacity: 0; } to { clip-path: inset(0 0 0 0 round 28px); opacity: 1; } }
+.st-motion main.px .px-hero__media .media,
+.st-motion main.px .px-hero__media .ph { transform: translateY(calc(var(--p, 0) * 7%)) scale(1.14); }   /* 7% de deslocamento cabe nos 7% de sobra de cada lado */
+
+/* blocos que entram ao descer e saem ao subir. --d (app.js) é a posição entre os irmãos */
+.st-motion main.px :is(.px-head > *, .px-sec > .container > .px-h2, .prod-split > div:first-child > *,
+  .px-quote__copy > *, .px-end .container > *, .hub-index) {
+  opacity: 0; translate: 0 32px;
+  transition: opacity .8s ease, translate 1s cubic-bezier(.2,.7,.2,1);
+}
+.st-motion main.px :is(.hl__card, .stat, .cov__item, .exc > li, .plan, .etapa, .faq__item, .rel__item,
+  .why__item, .price__col, .hub > li, .px-quote__form) {
+  opacity: 0; translate: 0 48px; scale: .96;
+  transition: opacity .7s ease, translate 1s cubic-bezier(.2,.7,.2,1), scale 1s cubic-bezier(.2,.7,.2,1),
+              transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+}
+.st-motion main.px .is-in:is(.px-head > *, .px-sec > .container > .px-h2, .prod-split > div:first-child > *,
+  .px-quote__copy > *, .px-end .container > *, .hub-index) {
+  opacity: 1; translate: none; transition-delay: calc(var(--d, 0) * 90ms);
+}
+.st-motion main.px .is-in:is(.hl__card, .stat, .cov__item, .exc > li, .plan, .etapa, .faq__item, .rel__item,
+  .why__item, .price__col, .hub > li, .px-quote__form) {
+  opacity: 1; translate: none; scale: none;
+  transition-delay: var(--dl), var(--dl), var(--dl), 0s, 0s, 0s, 0s;
+  --dl: calc(var(--d, 0) * 110ms);
+}
+/* o número das etapas da consultoria desenha um traço laranja quando a etapa entra */
+.st-motion main.px .etapa .etapa__n { background-image: linear-gradient(var(--orange-light), var(--orange-light));
+  background-repeat: no-repeat; background-position: 0 100%; background-size: 0 2px; padding-bottom: 6px;
+  transition: background-size .9s cubic-bezier(.2,.7,.2,1); }
+.st-motion main.px .etapa.is-in .etapa__n { background-size: 100% 2px; transition-delay: calc(var(--d, 0) * 110ms + .3s); }
+
+/* abas de conteúdo: o painel novo entra em cascata a cada troca */
+.st-motion main.px .dtab:not([hidden]) > * { animation: hl-in .6s cubic-bezier(.2,.7,.2,1) both; }
+.st-motion main.px .dtab:not([hidden]) > :nth-child(2) { animation-delay: .08s; }
+.st-motion main.px .dtab:not([hidden]) .dtab__check li { animation: hl-in .5s cubic-bezier(.2,.7,.2,1) both; }
+.st-motion main.px .dtab:not([hidden]) .dtab__check li:nth-child(2) { animation-delay: .18s; }
+.st-motion main.px .dtab:not([hidden]) .dtab__check li:nth-child(3) { animation-delay: .26s; }
+.st-motion main.px .dtab:not([hidden]) .dtab__check li:nth-child(n+4) { animation-delay: .34s; }
 
 </style>
 
@@ -3404,8 +3481,38 @@ html.alta-lock { overflow: hidden; }
        pass:  seção comum; 0 quando entra por baixo, 1 quando sai por cima.
      data-steps divide o trecho em capítulos e marca o ativo. */
   (function setupStory() {
-    var root = $('.story, [data-motion]');                      /* Sobre e o teste da home */
+    var root = $('.story, [data-motion], main.px');              /* Sobre, home, produtos e hubs */
     if (!root || !document.documentElement.classList.contains('st-motion')) return;
+
+    /* Páginas de produto e hubs (padrão .px): as interações saem da estrutura comum, sem marcar
+       nada nos templates. O CSS já esconde esses blocos antes da pintura (html.st-motion), então
+       aqui só entram a ordem da cascata (--d), o recuo do topo e os contadores. */
+    var PX_AUTO = '.px-head > *, .px-sec > .container > .px-h2, .prod-split > div:first-child > *,' +
+      ' .px-quote__copy > *, .px-quote__form, .px-end .container > *, .hub-index,' +
+      ' .hl__card, .stat, .cov__item, .exc > li, .plan, .etapa, .faq__item, .rel__item,' +
+      ' .why__item, .price__col, .hub > li';
+    var pxAuto = root.classList.contains('px') ? $$(PX_AUTO, root) : [];
+    pxAuto.forEach(function (el) {
+      var i = 0, sib = el.previousElementSibling;                 /* posição entre os irmãos animados */
+      while (sib) { if (sib.matches(PX_AUTO)) i++; sib = sib.previousElementSibling; }
+      el.style.setProperty('--d', Math.min(i, 7));
+    });
+    if (pxAuto.length) {
+      var hero = $('.px-hero', root);
+      if (hero) hero.setAttribute('data-scrub', 'leave');
+      /* números das seções escuras: "50+", "24 horas" contam a partir de zero; "2 vidas", "R$ 0", "Grupo" ficam */
+      $$('.stat__num', root).forEach(function (el) {
+        var node = Array.prototype.find.call(el.childNodes, function (n) { return n.nodeType === 3 && /\d/.test(n.nodeValue); });
+        var m = node && node.nodeValue.match(/(\d{1,3}(?:\.\d{3})+|\d+)(?![\d,])/);
+        if (!m || +m[1].replace(/\./g, '') < 10) return;       /* contar até 2 pisca; só de 10 para cima */
+        var after = node.splitText(m.index);
+        after.splitText(m[1].length);
+        var span = document.createElement('span');
+        span.setAttribute('data-count', m[1].replace(/\./g, ''));
+        span.textContent = m[1];
+        after.parentNode.replaceChild(span, after);
+      });
+    }
 
     /* manifesto: cada palavra vira um span com índice, e o CSS acende conforme --p */
     $$('[data-words]', root).forEach(function (el) {
@@ -3466,7 +3573,7 @@ html.alta-lock { overflow: hidden; }
 
     /* entradas nos dois sentidos: descendo, o elemento entra ao cruzar a tela; subindo, sai
        quando volta a ficar abaixo dela. Acima da tela ele fica como está, para não piscar. */
-    var reveals = $$('[data-reveal]', root), counters = $$('[data-count]', root);
+    var reveals = $$('[data-reveal]', root).concat(pxAuto), counters = $$('[data-count]', root);
     if (!('IntersectionObserver' in window)) {
       reveals.forEach(function (el) { el.classList.add('is-in'); });
       return;
@@ -3480,9 +3587,12 @@ html.alta-lock { overflow: hidden; }
       }, opts);
       els.forEach(function (el) { obs.observe(el); });
     }
-    watch(reveals, { rootMargin: '0px 0px -12% 0px', threshold: .15 },
-      function (el) { el.classList.add('is-in'); },
-      function (el) { el.classList.remove('is-in'); });
+    /* cards da galeria horizontal entram com qualquer pedaço à vista: a ponta do próximo card é o
+       que avisa que a galeria continua para o lado, então ela não pode ficar vazia */
+    var inOut = [function (el) { el.classList.add('is-in'); }, function (el) { el.classList.remove('is-in'); }];
+    var peek = function (el) { return el.classList.contains('hl__card'); };
+    watch(reveals.filter(function (el) { return !peek(el); }), { rootMargin: '0px 0px -12% 0px', threshold: .15 }, inOut[0], inOut[1]);
+    watch(reveals.filter(peek), { rootMargin: '0px 0px -12% 0px', threshold: 0 }, inOut[0], inOut[1]);
 
     /* conversa de exemplo: toca ao entrar e se desfaz ao sair por baixo */
     watch($$('[data-chat-play]', root), { threshold: .5 },
