@@ -1861,6 +1861,50 @@ html.alta-lock { overflow: hidden; }
   .st-motion .st-ch__txt { margin-top: 12px; font-size: 15px; line-height: 1.5; }
 }
 
+/* ==========================================================================
+   TESTE: ANIMAÇÃO DA MARCA (/lab/logo/)
+   Triângulo em duas partes que viram os colchetes; depois "Seguro" e "é Seguralta".
+   A troca de forma é feita em JS (src/lab-logo.html); aqui ficam só as entradas.
+   ========================================================================== */
+.lg-stage {
+  min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 56px; padding: 40px var(--gutter); background: #F5F5F5; color: var(--ink);
+}
+.lg { width: min(720px, 88vw); height: auto; overflow: visible; }
+/* traços: triângulo, quadrado e colchetes no laranja da marca. A janela visível (cauda até a
+   ponta) é controlada no JS */
+.lg-line { fill: none; stroke: #FF6400; stroke-linejoin: miter; stroke-miterlimit: 10; stroke-linecap: butt; }
+/* palavras. "Seguro" e o É só aparecem, letra a letra, com um pequeno quique (o acento cai por cima).
+   SEGURALTA é escrita à mão: o contorno de cada letra é traçado e depois ela se preenche, da
+   esquerda para a direita. No grupo de "é Seguralta": 1º o É, 2º o acento, 3º em diante as letras
+   (separadas no JS). --i vem do JS, pela posição de cada forma */
+.lg-word path { transform-box: fill-box; stroke: none; }
+.lg-word--seguro path, .lg-word--seguralta path:nth-child(-n+2) { opacity: 0; transform: translateY(40%) scale(.92); }
+.lg-word--seguralta path:nth-child(2) { transform: translateY(-160%); }
+.lg.is-seguro .lg-word--seguro path,
+.lg.is-seguralta .lg-word--seguralta path:nth-child(-n+2) {
+  opacity: 1; transform: none;
+  transition: opacity .35s ease, transform .6s cubic-bezier(.34,1.56,.64,1);
+}
+.lg.is-seguro .lg-word--seguro path { transition-delay: calc(var(--i) * 55ms); }
+.lg.is-seguralta .lg-word--seguralta path:nth-child(2) { transition-delay: .12s; }
+
+.lg-word--seguralta path:nth-child(n+3) {
+  stroke: #FF6400; stroke-width: .9; stroke-linejoin: round; stroke-dasharray: 1 2; stroke-dashoffset: 1; fill-opacity: 0;
+}
+.lg.is-seguralta .lg-word--seguralta path:nth-child(n+3) {
+  stroke-dashoffset: 0; fill-opacity: 1; stroke-opacity: 0;
+  --d: calc((var(--i) - 2) * 120ms + .25s);                   /* começa logo depois do É */
+  transition: stroke-dashoffset .7s cubic-bezier(.55,0,.35,1) var(--d),
+              fill-opacity .45s ease calc(var(--d) + .5s),
+              stroke-opacity .3s ease calc(var(--d) + .85s);
+}
+/* volta do loop: depois da borracha (máscara no SVG), as palavras ficam escondidas de uma vez,
+   sem transição, para a máscara poder voltar limpa */
+.lg.is-sai .lg-word path:nth-child(n) { opacity: 0; transition: none; }   /* :nth-child(n) iguala a força das regras do É */
+.lg-replay { font: 600 14px/20px var(--font-body); color: var(--ink-65); padding: 10px 4px; border-bottom: 1px solid rgba(0,0,0,.18); }
+.lg-replay:hover { color: var(--ink); border-color: var(--orange); }
+
 </style>
 
 <script type="application/ld+json">
